@@ -3,25 +3,51 @@
 import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast"
 
 export default function DonationTracker() {
   const [progress, setProgress] = useState(0)
+  const { toast } = useToast()
+
+  // Calculate yesterday's date
+  const yesterday = new Date()
+  yesterday.setDate(yesterday.getDate() - 1)
+  const lastUpdated = yesterday.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'short', 
+    day: 'numeric' 
+  })
 
   // Animation effect for progress bar
   useEffect(() => {
     const timer = setTimeout(() => {
-      setProgress(34.5) // 3,450,000 / 10,000,000 * 100
+      setProgress(0) // GOTTA CHANGE THIS EVERY DAY (Sample: 3,450,000 / 9,000,000 * 100)
     }, 300)
     return () => clearTimeout(timer)
   }, [])
 
-  const collected = 3_450_000
-  const goal = 10_000_000
+  const collected = 0
+  const goal = 9_000_000
   const slipperCost = 45_000
   const totalSlippers = 187
 
   const slippersFunded = Math.floor(collected / slipperCost)
   const slippersRemaining = totalSlippers - slippersFunded
+
+  const copyToClipboard = (text: string, label: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      toast({
+        title: "✓ Copied!",
+        description: `${label} number copied to clipboard`,
+      })
+    }).catch(() => {
+      toast({
+        title: "Failed to copy",
+        description: "Please try again",
+        variant: "destructive",
+      })
+    })
+  }
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-background via-secondary to-background py-8 px-4 sm:px-6 lg:px-8">
@@ -88,19 +114,23 @@ export default function DonationTracker() {
         <Card className="mb-8 p-8 shadow-lg border-0 bg-card">
           <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
             <span>💳</span>
-            Donate via Uzcard / HUMO
+            Donate via Card
           </h2>
 
           <div className="space-y-4">
-            <div className="bg-secondary p-4 rounded-lg border border-border">
+            <div 
+              className="bg-secondary p-4 rounded-lg border border-border cursor-pointer hover:bg-secondary/80 transition-colors"
+              onClick={() => copyToClipboard("8600612227452165", "Uzcard")}
+            >
               <p className="text-sm text-muted-foreground mb-2">Uzcard</p>
-              <p className="text-lg font-mono font-bold text-foreground">8600 XXXX XXXX XXXX</p>
+              <p className="text-lg font-mono font-bold text-foreground">8600 6122 2745 2165</p>
+              <p className="text-xs text-muted-foreground mt-2">Click to copy</p>
             </div>
 
-            <div className="bg-secondary p-4 rounded-lg border border-border">
+            {/* <div className="bg-secondary p-4 rounded-lg border border-border">
               <p className="text-sm text-muted-foreground mb-2">HUMO</p>
               <p className="text-lg font-mono font-bold text-foreground">9860 XXXX XXXX XXXX</p>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
@@ -108,7 +138,9 @@ export default function DonationTracker() {
               <span className="font-semibold">💬 After donating:</span> Please send a screenshot or message to Telegram
             </p>
             <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-              Message @yourteamusername
+              <a href="https://t.me/warmstepdonation">
+                Telegram @warmstepdonation
+              </a>
             </Button>
           </div>
         </Card>
@@ -119,16 +151,16 @@ export default function DonationTracker() {
             <span>🔄</span>
             Updated every 24 hours
           </p>
-          <p>Last updated: Oct 28, 2025</p>
+          <p>Last updated: {lastUpdated}</p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-border">
-            <a href="https://t.me/yourteamusername" className="text-primary hover:underline font-semibold">
-              Telegram @yourteamusername
+            <a href="https://t.me/warmstepdonation" className="text-primary hover:underline font-semibold">
+              Telegram @warmstepdonation
             </a>
-            <span className="hidden sm:inline text-border">•</span>
+            {/* <span className="hidden sm:inline text-border">•</span>
             <a href="https://instagram.com/yourinsta" className="text-primary hover:underline font-semibold">
               Instagram @yourinsta
-            </a>
+            </a> */}
           </div>
         </div>
       </div>
