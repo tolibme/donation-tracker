@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import Link from "next/link"
 
 export default function DonationTracker() {
   const [progress, setProgress] = useState(0)
@@ -154,6 +155,10 @@ export default function DonationTracker() {
           <p>Last updated: {lastUpdated}</p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-border">
+            <Link href="/donators" className="text-primary hover:underline font-semibold">
+              🙏 View Our Donators
+            </Link>
+            <span className="hidden sm:inline text-border">•</span>
             <a href="https://t.me/warmstepdonation" className="text-primary hover:underline font-semibold">
               Telegram @warmstepdonation
             </a>
