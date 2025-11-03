@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import Link from "next/link"
 
 interface Donator {
@@ -16,6 +18,7 @@ interface Donator {
 export default function DonatorsPage() {
   const [donators, setDonators] = useState<Donator[]>([])
   const [loading, setLoading] = useState(true)
+  const { t, language } = useLanguage()
 
   useEffect(() => {
     fetch('/api/donators')
@@ -35,7 +38,8 @@ export default function DonatorsPage() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const locale = language === 'uz' ? 'uz-UZ' : language === 'ru' ? 'ru-RU' : 'en-US'
+    return new Date(dateString).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -47,32 +51,37 @@ export default function DonatorsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-background via-secondary to-background py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* Language Switcher */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <Link href="/">
             <Button variant="outline" className="mb-4">
-              ← Back to Home
+              ← {t.backToHome}
             </Button>
           </Link>
           
           <h1 className="text-4xl sm:text-5xl font-bold text-foreground mb-4 flex items-center gap-3">
             <span className="text-5xl">🙏</span>
-            <span>Our Generous Donators</span>
+            <span>{t.ourDonators}</span>
           </h1>
           <p className="text-lg text-muted-foreground">
-            Thank you to everyone who has contributed to bringing warmth this winter
+            {t.thankYouMessage}
           </p>
         </div>
 
         {/* Total Donations Card */}
         <Card className="mb-8 p-6 shadow-lg border-0 bg-card">
           <div className="text-center">
-            <p className="text-sm text-muted-foreground mb-2">Total Donations</p>
+            <p className="text-sm text-muted-foreground mb-2">{t.totalDonations}</p>
             <p className="text-3xl sm:text-4xl font-bold text-primary">
               {formatAmount(totalDonations)} UZS
             </p>
             <p className="text-sm text-muted-foreground mt-2">
-              from {donators.length} generous {donators.length === 1 ? 'donor' : 'donors'}
+              {t.from} {donators.length} {donators.length === 1 ? t.donor : t.donors}
             </p>
           </div>
         </Card>
@@ -80,11 +89,11 @@ export default function DonatorsPage() {
         {/* Donators List */}
         {loading ? (
           <Card className="p-8 text-center">
-            <p className="text-muted-foreground">Loading donators...</p>
+            <p className="text-muted-foreground">{t.loadingDonators}</p>
           </Card>
         ) : donators.length === 0 ? (
           <Card className="p-8 text-center">
-            <p className="text-muted-foreground">No donations yet. Be the first to donate!</p>
+            <p className="text-muted-foreground">{t.noDonations}</p>
           </Card>
         ) : (
           <div className="space-y-4">
@@ -121,7 +130,7 @@ export default function DonatorsPage() {
         <div className="mt-12 text-center">
           <Link href="/">
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Make a Donation
+              {t.makeADonation}
             </Button>
           </Link>
         </div>
