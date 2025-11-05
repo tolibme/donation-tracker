@@ -26,12 +26,12 @@ export default function DonationTracker() {
   // Animation effect for progress bar
   useEffect(() => {
     const timer = setTimeout(() => {
-      setProgress(0) // GOTTA CHANGE THIS EVERY DAY (Sample: 3,450,000 / 9,000,000 * 100)
+      setProgress(0.001) // GOTTA CHANGE THIS EVERY DAY (Sample: 3,450,000 / 9,000,000 * 100)
     }, 300)
     return () => clearTimeout(timer)
   }, [])
 
-  const collected = 0
+  const collected = 90_000
   const goal = 9_000_000
   const slipperCost = 45_000
   const totalSlippers = 187
