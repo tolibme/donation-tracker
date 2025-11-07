@@ -1,6 +1,7 @@
-// Database utility that works with both local JSON and Vercel Blob
+// Database utility that works with MongoDB (cloud) and local JSON (development)
 import path from 'path'
 import { promises as fs } from 'fs'
+import { MongoClient, Db, Collection } from 'mongodb'
 
 interface Donator {
   id: number
@@ -10,49 +11,54 @@ interface Donator {
   message?: string
 }
 
-// Check if we have Vercel Blob configured
-const hasBlob = process.env.BLOB_READ_WRITE_TOKEN
+// MongoDB connection
+let cachedClient: MongoClient | null = null
+let cachedDb: Db | null = null
 
-let blobPut: any = null
-let blobList: any = null
-let blobDel: any = null
+const MONGODB_URI = process.env.MONGODB_URI
+const DB_NAME = process.env.MONGODB_DB || 'warmsteps'
+const COLLECTION_NAME = 'donators'
 
-// Initialize Blob only if available
-if (hasBlob) {
-  try {
-    const blob = require('@vercel/blob')
-    blobPut = blob.put
-    blobList = blob.list
-    blobDel = blob.del
-  } catch (error) {
-    console.warn('Vercel Blob not available, using local JSON file')
+async function connectToDatabase() {
+  if (cachedClient && cachedDb) {
+    return { client: cachedClient, db: cachedDb }
   }
+
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI is not defined')
+  }
+
+  const client = await MongoClient.connect(MONGODB_URI)
+  const db = client.db(DB_NAME)
+
+  cachedClient = client
+  cachedDb = db
+
+  return { client, db }
 }
 
-const DONATORS_BLOB_NAME = 'donators.json'
+async function getCollection(): Promise<Collection<Donator>> {
+  const { db } = await connectToDatabase()
+  return db.collection<Donator>(COLLECTION_NAME)
+}
+
+// Check if we have MongoDB configured
+const hasMongoDB = !!MONGODB_URI
 
 // Get all donators
 export async function getDonators(): Promise<Donator[]> {
-  if (blobPut && blobList) {
+  if (hasMongoDB) {
     try {
-      // List blobs to find our donators file
-      const { blobs } = await blobList({ prefix: DONATORS_BLOB_NAME })
-      
-      if (blobs && blobs.length > 0) {
-        // Fetch the blob content
-        const response = await fetch(blobs[0].url)
-        const data = await response.json()
-        return data
-      }
-      
-      // If blob doesn't exist, return empty array
-      return []
+      const collection = await getCollection()
+      const donators = await collection.find({}).sort({ id: 1 }).toArray()
+      // Remove MongoDB _id field
+      return donators.map(({ _id, ...donator }: any) => donator)
     } catch (error) {
-      console.error('Error reading from Blob:', error)
+      console.error('Error reading from MongoDB:', error)
       return []
     }
   } else {
-    // Use local JSON file
+    // Use local JSON file for development
     try {
       const jsonDirectory = path.join(process.cwd(), 'data')
       const filePath = jsonDirectory + '/donators.json'
@@ -65,26 +71,19 @@ export async function getDonators(): Promise<Donator[]> {
   }
 }
 
-// Save all donators
-export async function saveDonators(donators: Donator[]): Promise<boolean> {
-  if (blobPut && blobList && blobDel) {
+// Save all donators (for local dev only, MongoDB uses individual operations)
+async function saveDonators(donators: Donator[]): Promise<boolean> {
+  if (hasMongoDB) {
     try {
-      // Delete old blob if exists
-      const { blobs } = await blobList({ prefix: DONATORS_BLOB_NAME })
-      if (blobs && blobs.length > 0) {
-        await blobDel(blobs[0].url)
+      const collection = await getCollection()
+      // Clear collection and insert all
+      await collection.deleteMany({})
+      if (donators.length > 0) {
+        await collection.insertMany(donators as any)
       }
-      
-      // Upload new blob
-      const jsonString = JSON.stringify(donators, null, 2)
-      await blobPut(DONATORS_BLOB_NAME, jsonString, {
-        access: 'public',
-        contentType: 'application/json',
-      })
-      
       return true
     } catch (error) {
-      console.error('Error writing to Blob:', error)
+      console.error('Error writing to MongoDB:', error)
       return false
     }
   } else {
@@ -96,12 +95,12 @@ export async function saveDonators(donators: Donator[]): Promise<boolean> {
       return true
     } catch (error) {
       console.error('Error writing to JSON file:', error)
-      console.error('If you are on Vercel, you need to set up Vercel Blob storage.')
+      console.error('If you are on Vercel, you need to set up MongoDB.')
       console.error('See DATABASE_SETUP.md for instructions.')
       
       // Check if we're in a serverless environment
       if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-        throw new Error('Cannot write to filesystem in serverless environment. Please set up Vercel Blob storage. See DATABASE_SETUP.md')
+        throw new Error('Cannot write to filesystem in serverless environment. Please set up MongoDB. See DATABASE_SETUP.md')
       }
       return false
     }
@@ -120,40 +119,83 @@ export async function addDonator(donator: Omit<Donator, 'id'>): Promise<Donator 
     message: donator.message || ''
   }
   
-  donators.push(newDonator)
-  const success = await saveDonators(donators)
-  return success ? newDonator : null
+  if (hasMongoDB) {
+    try {
+      const collection = await getCollection()
+      await collection.insertOne(newDonator as any)
+      return newDonator
+    } catch (error) {
+      console.error('Error adding to MongoDB:', error)
+      return null
+    }
+  } else {
+    donators.push(newDonator)
+    const success = await saveDonators(donators)
+    return success ? newDonator : null
+  }
 }
 
 // Update a donator
 export async function updateDonator(id: number, donator: Omit<Donator, 'id'>): Promise<boolean> {
-  const donators = await getDonators()
-  const index = donators.findIndex(d => d.id === id)
-  
-  if (index === -1) return false
-  
-  donators[index] = {
-    id,
-    name: donator.name,
-    amount: Number(donator.amount),
-    date: donator.date,
-    message: donator.message || ''
+  if (hasMongoDB) {
+    try {
+      const collection = await getCollection()
+      const result = await collection.updateOne(
+        { id },
+        { 
+          $set: {
+            name: donator.name,
+            amount: Number(donator.amount),
+            date: donator.date,
+            message: donator.message || ''
+          }
+        }
+      )
+      return result.matchedCount > 0
+    } catch (error) {
+      console.error('Error updating in MongoDB:', error)
+      return false
+    }
+  } else {
+    const donators = await getDonators()
+    const index = donators.findIndex(d => d.id === id)
+    
+    if (index === -1) return false
+    
+    donators[index] = {
+      id,
+      name: donator.name,
+      amount: Number(donator.amount),
+      date: donator.date,
+      message: donator.message || ''
+    }
+    
+    return await saveDonators(donators)
   }
-  
-  return await saveDonators(donators)
 }
 
 // Delete a donator
 export async function deleteDonator(id: number): Promise<boolean> {
-  const donators = await getDonators()
-  const filtered = donators.filter(d => d.id !== id)
-  
-  if (filtered.length === donators.length) return false
-  
-  return await saveDonators(filtered)
+  if (hasMongoDB) {
+    try {
+      const collection = await getCollection()
+      const result = await collection.deleteOne({ id })
+      return result.deletedCount > 0
+    } catch (error) {
+      console.error('Error deleting from MongoDB:', error)
+      return false
+    }
+  } else {
+    const donators = await getDonators()
+    const filtered = donators.filter(d => d.id !== id)
+    
+    if (filtered.length === donators.length) return false
+    
+    return await saveDonators(filtered)
+  }
 }
 
 // Get storage type for debugging
 export function getStorageType(): string {
-  return blobPut ? 'Vercel Blob' : 'Local JSON File'
+  return hasMongoDB ? 'MongoDB Atlas' : 'Local JSON File'
 }

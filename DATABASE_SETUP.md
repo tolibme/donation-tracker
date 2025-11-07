@@ -1,84 +1,124 @@
-# Vercel Blob Storage Setup
+# MongoDB Atlas Setup
 
-This project uses **Vercel Blob** for storing donators data in production, while using local JSON files for development.
+This project uses **MongoDB Atlas** for storing donators data in production, while using local JSON files for development.
 
 ## 📋 Prerequisites
 
-- A [Vercel account](https://vercel.com/signup) (free)
+- A [MongoDB Atlas account](https://www.mongodb.com/cloud/atlas/register) (free)
 - Your project deployed on Vercel
 
 ## 🚀 Quick Setup Guide
 
-### Step 1: Install Vercel Blob Package
+### Method 1: Using Vercel's MongoDB Integration (Easiest)
 
-```bash
-pnpm add @vercel/blob
-```
+**Vercel has a direct integration with MongoDB Atlas!**
 
-✅ Already done in this project!
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select your **donation-tracker** project
+3. Go to **Storage** tab
+4. Click **"Create Database"** or **"Connect Store"**
+5. Select **"MongoDB Atlas"** from the marketplace
+6. Click **"Continue"** and follow the prompts
+7. Vercel will automatically:
+   - Set up MongoDB Atlas cluster
+   - Add `MONGODB_URI` environment variable
+   - Configure everything for you
+8. Choose database name: **`warmsteps`** (recommended)
+9. Done! No manual setup needed! 🎉
 
-### Step 2: Create Vercel Blob Store
+### Method 2: Manual MongoDB Atlas Setup
 
-1. Go to your [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your deployed project: **donation-tracker**
-3. Click on the **Storage** tab in the top navigation
-4. Click **Create Store** or **Create Database**
-5. Select **Blob** (Fast object storage)
-6. Give it a name: `donation-tracker-blob`
-7. Click **Create**
+If you prefer to set it up manually or already have a MongoDB Atlas account:
 
-✅ Vercel will automatically add the `BLOB_READ_WRITE_TOKEN` environment variable to your project!
+### Step 1: Create MongoDB Atlas Account
 
-### Step 3: Upload Initial Data
+**Note:** Skip this if you used Vercel's integration above.
 
-After creating the Blob store, you need to upload your initial donators data.
+1. Go to [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)
+2. Sign up for a free account
+3. Verify your email
 
-#### Option A: Using Admin Panel (Easiest)
+### Step 2: Create a Free Cluster
 
-The first time you add a donator through the admin panel in production, it will automatically create the blob file with your data.
+1. After logging in, click **"Build a Database"**
+2. Choose **"M0 FREE"** tier
+   - 512 MB storage
+   - Shared RAM
+   - Perfect for this project!
+3. Select a **Cloud Provider & Region** (choose closest to your users)
+4. Name your cluster (e.g., `donation-tracker`)
+5. Click **"Create Cluster"** (takes 3-5 minutes)
 
-1. Go to your deployed site: `https://your-site.vercel.app/admin`
+### Step 3: Create Database User
+
+1. In the **Security** section, click **"Database Access"**
+2. Click **"Add New Database User"**
+3. Choose **"Password"** authentication
+4. Enter username: `admin` (or any name you prefer)
+5. Click **"Autogenerate Secure Password"** and **SAVE IT**
+6. Set permissions to **"Read and write to any database"**
+7. Click **"Add User"**
+
+### Step 4: Configure Network Access
+
+1. Go to **"Network Access"** in Security section
+2. Click **"Add IP Address"**
+3. Click **"Allow Access from Anywhere"** (0.0.0.0/0)
+   - This is safe for Vercel deployments
+   - Or add specific Vercel IPs if you prefer
+4. Click **"Confirm"**
+
+### Step 5: Get Connection String
+
+1. Go back to **"Database"** view
+2. Click **"Connect"** on your cluster
+3. Select **"Connect your application"**
+4. Choose **"Driver: Node.js"** and **"Version: 5.5 or later"**
+5. Copy the connection string. It looks like:
+   ```
+   mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+6. Replace `<username>` with your database username
+7. Replace `<password>` with your database password
+8. The final connection string should look like:
+   ```
+   mongodb+srv://admin:YourPassword123@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
+   ```
+
+### Step 6: Add to Vercel Environment Variables
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard)
+2. Select your **donation-tracker** project
+3. Go to **Settings** → **Environment Variables**
+4. Add a new variable:
+   - **Name:** `MONGODB_URI`
+   - **Value:** Your connection string from Step 5
+   - **Environment:** Production, Preview, Development (select all)
+5. **Optional:** Add database name (if you want to customize it):
+   - **Name:** `MONGODB_DB`
+   - **Value:** `warmsteps` (or any name you prefer)
+   - **Environment:** Production, Preview, Development (select all)
+6. Click **"Save"**
+
+**Note:** If you don't set `MONGODB_DB`, it defaults to `warmsteps`.
+
+### Step 7: Redeploy
+
+1. Go to **Deployments** tab
+2. Click **"..."** on the latest deployment
+3. Click **"Redeploy"**
+4. Or just push a new commit to trigger auto-deploy
+
+### Step 8: Test It!
+
+1. Visit your deployed site: `https://your-site.vercel.app/admin`
 2. Login with password: `warmsteps2025`
-3. Add your first donator
-4. The system will automatically create `donators.json` in Blob storage
-
-#### Option B: Using Vercel CLI
-
-```bash
-# Install Vercel CLI if you haven't
-npm i -g vercel
-
-# Login to Vercel
-vercel login
-
-# Link your project
-vercel link
-
-# Pull environment variables (including BLOB_READ_WRITE_TOKEN)
-vercel env pull .env.local
-```
-
-Then you can manually upload via the Vercel Blob dashboard.
-
-#### Option C: Pre-populate via Dashboard
-
-1. In your Blob store dashboard, look for upload/create file option
-2. Create a file named: `donators.json`
-3. Copy the content from your local `data/donators.json`
-4. Save
-
-### Step 4: Verify Setup
-
-1. Go to **Settings** → **Environment Variables**
-2. Confirm `BLOB_READ_WRITE_TOKEN` is present
-3. Your app should auto-redeploy with the new environment variable
-
-### Step 5: Test It!
-
-1. Visit: `https://your-site.vercel.app/admin`
-2. Login with your admin password
-3. Try adding/editing/deleting a donator
-4. Check the main page to see updated stats
+3. Try adding a test donator
+4. Check if it appears on the main page
+5. Verify in MongoDB Atlas:
+   - Go to **"Browse Collections"**
+   - You should see `warmsteps` database (or your custom name)
+   - With `donators` collection
 
 ## 🔄 How It Works
 
@@ -86,33 +126,42 @@ The app automatically detects the environment:
 
 - **Local Development** (`npm run dev`):
   - Uses `data/donators.json` file
-  - No Blob setup needed
+  - No MongoDB setup needed
   - Easy to test locally
 
 - **Production** (Vercel):
-  - Automatically uses Vercel Blob if `BLOB_READ_WRITE_TOKEN` is present
-  - Creates/updates `donators.json` blob file
-  - Falls back to JSON file if Blob is not configured (read-only)
+  - Automatically uses MongoDB Atlas if `MONGODB_URI` is present
+  - Stores data in cloud database
+  - Scales automatically
+  - Falls back to JSON file if MongoDB is not configured (read-only)
 
-## 🧪 Testing Locally with Vercel Blob
+## 🧪 Testing Locally with MongoDB
 
-If you want to test with Vercel Blob locally:
+If you want to test with MongoDB locally:
 
 1. Create a `.env.local` file in your project root:
 
 ```env
-BLOB_READ_WRITE_TOKEN="your-token-here"
+MONGODB_URI=mongodb+srv://admin:YourPassword123@cluster0.xxxxx.mongodb.net/?retryWrites=true&w=majority
 ```
 
-2. Get this value from:
-   - Vercel Dashboard → Your Project → Storage → Your Blob Store → `.env.local` tab
-   - Copy the `BLOB_READ_WRITE_TOKEN` variable
-
-3. Restart your dev server:
+2. Restart your dev server:
 
 ```bash
 pnpm dev
 ```
+
+Now your local development will use MongoDB Atlas instead of the JSON file.
+
+## 📊 MongoDB Atlas Dashboard
+
+To view your data:
+
+1. Go to [MongoDB Atlas](https://cloud.mongodb.com)
+2. Click on your cluster
+3. Click **"Browse Collections"**
+4. Navigate to `warmsteps` → `donators` (or your custom database name)
+5. You can view, edit, and delete documents here
 
 ## ✅ Verification
 
@@ -122,24 +171,40 @@ To verify everything is working:
 2. Login with password: `warmsteps2025`
 3. Try adding a test donator
 4. Check if it appears on the main page with updated stats
-5. Verify in Vercel Dashboard → Storage → Blob → Browse files that `donators.json` exists
+5. Verify in MongoDB Atlas dashboard that the document was created
 
 ## 🔍 Troubleshooting
 
-### Error: "Vercel Blob is not configured"
+### Error: "Database not configured"
 
 **Solution**: 
-1. Make sure you've created the Blob store in Vercel Dashboard
-2. Check that `BLOB_READ_WRITE_TOKEN` environment variable exists
-3. Redeploy your application after creating the Blob store
+1. Make sure you've created the MongoDB Atlas cluster
+2. Check that `MONGODB_URI` environment variable exists in Vercel
+3. Verify the connection string is correct
+4. Redeploy your application after adding the variable
+
+### Error: "MongoNetworkError" or "Connection refused"
+
+**Solution**:
+1. Check **Network Access** in MongoDB Atlas
+2. Make sure you added 0.0.0.0/0 or Vercel's IPs
+3. Wait a few minutes for changes to propagate
+
+### Error: "Authentication failed"
+
+**Solution**:
+1. Double-check your username and password in the connection string
+2. Make sure you created a database user in MongoDB Atlas
+3. Verify the password doesn't contain special characters that need URL encoding
+   - If it does, use URL encoding (e.g., `@` becomes `%40`)
 
 ### Data not persisting
 
 **Solution**: 
-1. Check Vercel Dashboard → Storage → Your Blob Store → Browse
-2. Verify `donators.json` file exists
-3. Check the file content is valid JSON
-4. Try deleting and re-adding through admin panel
+1. Check MongoDB Atlas → Browse Collections
+2. Verify the `warmsteps` database exists (or your custom database name)
+3. Check the `donators` collection has documents
+4. Look at Vercel Function Logs for any errors
 
 ### Local development not working
 
@@ -148,28 +213,46 @@ To verify everything is working:
 - Check file permissions
 - Try deleting `.next` folder and rebuilding: `pnpm build`
 
-### 503 Service Unavailable
-
-**Solution**:
-- This means Blob storage is not configured
-- Follow Step 2 to create Blob store
-- Wait for auto-redeploy or manually redeploy
-
 ## 💰 Pricing
 
-Vercel Blob Free Tier (Hobby) includes:
-- **500 MB storage**
-- **1 GB bandwidth per month**
+MongoDB Atlas Free Tier (M0) includes:
+- **512 MB storage**
+- **Shared RAM**
+- **Shared vCPU**
+- **No credit card required**
 - More than enough for this donation tracker!
 
 For reference:
-- Each donator entry is ~100 bytes
+- Each donator document is ~100-150 bytes
 - You can store thousands of donators easily
-- JSON file typically < 1 MB even with hundreds of donators
+- Free tier supports up to 512 MB
+
+## 🔒 Security Best Practices
+
+1. **Never commit** your `.env.local` file to Git
+2. Use **strong passwords** for database users
+3. Regularly **rotate** your database passwords
+4. Monitor **database access logs** in Atlas
+5. Enable **2FA** on your MongoDB Atlas account
 
 ## 📚 Resources
 
-- [Vercel Blob Documentation](https://vercel.com/docs/storage/vercel-blob)
-- [Vercel Blob Quickstart](https://vercel.com/docs/storage/vercel-blob/quickstart)
-- [@vercel/blob Package](https://www.npmjs.com/package/@vercel/blob)
+- [MongoDB Atlas Documentation](https://docs.atlas.mongodb.com/)
+- [MongoDB Node.js Driver](https://www.mongodb.com/docs/drivers/node/current/)
+- [Connection String Format](https://www.mongodb.com/docs/manual/reference/connection-string/)
+- [MongoDB Atlas Free Tier](https://www.mongodb.com/pricing)
 
+## 🆚 Why MongoDB vs Vercel Blob?
+
+**MongoDB Atlas Benefits:**
+- ✅ **True database** with querying, indexing, aggregation
+- ✅ **Free tier** 512 MB (vs Blob's 500 MB)
+- ✅ **Faster** for complex queries
+- ✅ **Better** for scaling
+- ✅ **More features** (transactions, aggregations, etc.)
+- ✅ **Industry standard** database
+- ✅ **No vendor lock-in** - can migrate anywhere
+
+---
+
+**Need Help?** Open an issue on GitHub or contact support!

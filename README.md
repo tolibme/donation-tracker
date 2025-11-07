@@ -1,252 +1,502 @@
-# 💖 Warm Steps - Donation Tracker# 💖 Warm Steps for Kind Hearts - Donation Tracker
+# 💖 Warm Steps - Donation Tracker# 💖 Warm Steps - Donation Tracker# 💖 Warm Steps for Kind Hearts - Donation Tracker
 
 
 
-A beautiful, multilingual donation tracking platform built with Next.js 16, TypeScript, and Vercel Blob storage.A beautiful, multilingual donation tracking website built with Next.js to help raise funds for providing winter slippers to 187 grandparents.
+A beautiful, multilingual donation tracking platform built with Next.js 16, TypeScript, and MongoDB Atlas.
 
 
 
-## ✨ Features## ✨ Features
+## ✨ FeaturesA beautiful, multilingual donation tracking platform built with Next.js 16, TypeScript, and Vercel Blob storage.A beautiful, multilingual donation tracking website built with Next.js to help raise funds for providing winter slippers to 187 grandparents.
 
 
 
-- **Real-time Donation Tracking** - Automatically calculates progress and statistics- **Real-time Progress Tracking**: Visual progress bar showing donation goals and current status
+- **Real-time Donation Tracking** - Automatically calculates progress and statistics
 
-- **Multi-language Support** - English, Uzbek (O'zbekcha), and Russian (Русский)- **Multilingual Support**: Full support for 3 languages
+- **Multi-language Support** - English, Uzbek (O'zbekcha), and Russian (Русский)
 
-- **Admin Panel** - Secure password-protected interface for managing donations  - 🇬🇧 English
+- **Admin Panel** - Secure password-protected interface for managing donations## ✨ Features## ✨ Features
 
-- **Click-to-Copy Card Numbers** - Easy donation process  - 🇺🇿 O'zbekcha (Uzbek)
+- **Click-to-Copy Card Numbers** - Easy donation process
+
+- **Responsive Design** - Works perfectly on all devices
+
+- **MongoDB Atlas** - Free, fast, and scalable cloud database
+
+- **Local Development** - Uses JSON files for easy local testing- **Real-time Donation Tracking** - Automatically calculates progress and statistics- **Real-time Progress Tracking**: Visual progress bar showing donation goals and current status
+
+
+
+## 🚀 Quick Start- **Multi-language Support** - English, Uzbek (O'zbekcha), and Russian (Русский)- **Multilingual Support**: Full support for 3 languages
+
+
+
+### Prerequisites- **Admin Panel** - Secure password-protected interface for managing donations  - 🇬🇧 English
+
+
+
+- Node.js 18+ installed- **Click-to-Copy Card Numbers** - Easy donation process  - 🇺🇿 O'zbekcha (Uzbek)
+
+- pnpm package manager (`npm install -g pnpm`)
 
 - **Responsive Design** - Works perfectly on all devices  - 🇷🇺 Русский (Russian)
 
+### Installation
+
 - **Vercel Blob Storage** - Production-ready cloud storage- **Click-to-Copy Card Numbers**: Easy copying of donation card numbers with toast notifications
 
-- **Local Development** - Uses JSON files for easy local testing- **Donators Hall of Fame**: Dedicated page showcasing all generous donors
+1. **Clone the repository**
 
-- **Responsive Design**: Works beautifully on mobile, tablet, and desktop
+   ```bash- **Local Development** - Uses JSON files for easy local testing- **Donators Hall of Fame**: Dedicated page showcasing all generous donors
+
+   git clone https://github.com/tolibme/donation-tracker.git
+
+   cd donation-tracker- **Responsive Design**: Works beautifully on mobile, tablet, and desktop
+
+   ```
 
 ## 🚀 Quick Start- **Dark/Light Theme Support**: Integrated theme provider for user preference
 
-- **Analytics Integration**: Vercel Analytics for tracking visitor metrics
+2. **Install dependencies**
 
-### Prerequisites
+   ```bash- **Analytics Integration**: Vercel Analytics for tracking visitor metrics
 
-## 🚀 Tech Stack
+   pnpm install
 
-- Node.js 18+ installed
+   ```### Prerequisites
+
+
+
+3. **Run development server**## 🚀 Tech Stack
+
+   ```bash
+
+   pnpm dev- Node.js 18+ installed
+
+   ```
 
 - pnpm package manager (`npm install -g pnpm`)- **Framework**: [Next.js 14+](https://nextjs.org/) (App Router)
 
-- **Language**: TypeScript
+4. **Open in browser**
 
-### Installation- **Styling**: Tailwind CSS
+   ```- **Language**: TypeScript
 
-- **UI Components**: Custom components built with Radix UI
+   http://localhost:3000
 
-1. **Clone the repository**- **Icons & Emojis**: Unicode emojis for universal support
-
-   ```bash- **Package Manager**: pnpm
-
-   git clone https://github.com/tolibme/donation-tracker.git- **Analytics**: Vercel Analytics
-
-   cd donation-tracker
-
-   ```## 📦 Installation
+   ```### Installation- **Styling**: Tailwind CSS
 
 
 
-2. **Install dependencies**1. **Clone the repository**
+## 🗄️ Database Setup (Production)- **UI Components**: Custom components built with Radix UI
 
-   ```bash   ```bash
 
-   pnpm install   git clone https://github.com/tolibme/donation-tracker.git
+
+### Recommended Database Name: `warmsteps`1. **Clone the repository**- **Icons & Emojis**: Unicode emojis for universal support
+
+
+
+For production deployment on Vercel with MongoDB Atlas:   ```bash- **Package Manager**: pnpm
+
+
+
+**Option 1: Vercel Integration (Easiest)**   git clone https://github.com/tolibme/donation-tracker.git- **Analytics**: Vercel Analytics
+
+1. Go to Vercel Dashboard → Your Project → Storage
+
+2. Click "Create Database" → Select "MongoDB Atlas"   cd donation-tracker
+
+3. Follow Vercel's setup wizard
+
+4. Choose database name: **`warmsteps`**   ```## 📦 Installation
+
+5. Vercel automatically sets `MONGODB_URI` for you
+
+
+
+**Option 2: Manual Setup**
+
+1. Create free account at [MongoDB Atlas](https://www.mongodb.com/cloud/atlas/register)2. **Install dependencies**1. **Clone the repository**
+
+2. Create Free M0 Cluster (512 MB)
+
+3. Get connection string   ```bash   ```bash
+
+4. Add to Vercel environment variables:
+
+   - `MONGODB_URI` - Your connection string (required)   pnpm install   git clone https://github.com/tolibme/donation-tracker.git
+
+   - `MONGODB_DB` - Database name (optional, defaults to `warmsteps`)
 
    ```   cd donation-tracker
 
+**See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed step-by-step instructions.**
+
    ```
+
+## 🔐 Admin Panel
 
 3. **Run development server**
 
+Access the admin panel at `/admin`
+
    ```bash2. **Install dependencies**
+
+**Default Password:** `warmsteps2025`
 
    pnpm dev   ```bash
 
+To change the password, edit `lib/auth.ts`:
+
    ```   pnpm install
-
-   ```
-
-4. **Open in browser**
-
-   ```3. **Run the development server**
-
-   http://localhost:3000   ```bash
-
-   ```   pnpm dev
-
-   ```
-
-## 🗄️ Database Setup (Production)
-
-4. **Open your browser**
-
-For production deployment on Vercel, you need to set up Vercel Blob storage:   Navigate to [http://localhost:3000](http://localhost:3000)
-
-
-
-1. Go to [Vercel Dashboard](https://vercel.com/dashboard)## 📁 Project Structure
-
-2. Select your project
-
-3. Click **Storage** → **Create Store**```
-
-4. Select **Blob** (Fast object storage)donation-tracker/
-
-5. Name it `donation-tracker-blob`├── app/
-
-6. Click **Create**│   ├── api/
-
-│   │   └── donators/          # API route for fetching donators
-
-✅ `BLOB_READ_WRITE_TOKEN` will be automatically added to your environment variables.│   ├── donators/              # Donators page
-
-│   ├── layout.tsx             # Root layout with providers
-
-**See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed instructions.**│   ├── page.tsx               # Main donation tracker page
-
-│   └── globals.css            # Global styles
-
-## 🔐 Admin Panel├── components/
-
-│   ├── ui/                    # Reusable UI components
-
-Access the admin panel at `/admin`│   ├── LanguageSwitcher.tsx   # Language switcher dropdown
-
-│   └── theme-provider.tsx     # Theme context provider
-
-**Default Password:** `warmsteps2025`├── contexts/
-
-│   └── LanguageContext.tsx    # Language context and hook
-
-To change the password, edit `lib/auth.ts`:├── data/
-
-│   └── donators.json          # Donators data storage
-
-```typescript├── lib/
-
-export async function validateAdminPassword(password: string): Promise<boolean> {│   ├── i18n.ts                # Translation strings
-
-  return password === 'YOUR_NEW_PASSWORD'│   └── utils.ts               # Utility functions
-
-}├── hooks/
-
-```│   └── use-toast.ts           # Toast notification hook
-
-└── public/                    # Static assets
-
-### Admin Features```
-
-
-
-- ✅ Add new donators## 🌍 Adding/Editing Translations
-
-- ✅ Edit existing donations
-
-- ✅ Delete donationsEdit the translation file at `lib/i18n.ts`:
-
-- ✅ Real-time stats (total collected, donator count, slippers funded)
 
 ```typescript
 
-## 📁 Project Structureexport const translations: Record<Language, Translations> = {
+export async function validateAdminPassword(password: string): Promise<boolean> {   ```
 
-  en: {
+  return password === 'YOUR_NEW_PASSWORD'
 
-```    title: "Warm Steps for Kind Hearts",
+}4. **Open in browser**
 
-donation-tracker/    // ... more translations
+```
 
-├── app/  },
+   ```3. **Run the development server**
 
-│   ├── page.tsx              # Main donation page  uz: {
+### Admin Features
 
-│   ├── layout.tsx            # Root layout    title: "Mehribonlar uchun Issiq Qadamlar",
+   http://localhost:3000   ```bash
 
-│   ├── admin/    // ... more translations
+- ✅ Add new donators
 
-│   │   └── page.tsx          # Admin panel  },
+- ✅ Edit existing donations   ```   pnpm dev
 
-│   ├── donators/  ru: {
+- ✅ Delete donations
 
-│   │   └── page.tsx          # Donators list page    title: "Теплые шаги для добрых сердец",
+- ✅ Real-time stats (total collected, donator count, slippers funded)   ```
 
-│   └── api/    // ... more translations
 
-│       ├── stats/route.ts    # Stats API endpoint  }
 
-│       ├── donators/route.ts # Public donators API}
+## 📁 Project Structure## 🗄️ Database Setup (Production)
 
-│       └── admin/donators/route.ts # Admin CRUD API```
+
+
+```4. **Open your browser**
+
+donation-tracker/
+
+├── app/For production deployment on Vercel, you need to set up Vercel Blob storage:   Navigate to [http://localhost:3000](http://localhost:3000)
+
+│   ├── page.tsx              # Main donation page
+
+│   ├── layout.tsx            # Root layout
+
+│   ├── admin/
+
+│   │   └── page.tsx          # Admin panel1. Go to [Vercel Dashboard](https://vercel.com/dashboard)## 📁 Project Structure
+
+│   ├── donators/
+
+│   │   └── page.tsx          # Donators list page2. Select your project
+
+│   └── api/
+
+│       ├── stats/route.ts    # Stats API endpoint3. Click **Storage** → **Create Store**```
+
+│       ├── donators/route.ts # Public donators API
+
+│       └── admin/donators/route.ts # Admin CRUD API4. Select **Blob** (Fast object storage)donation-tracker/
 
 ├── components/
 
-│   ├── LanguageSwitcher.tsx  # Language selector## 📝 Managing Donators
+│   ├── LanguageSwitcher.tsx  # Language selector5. Name it `donation-tracker-blob`├── app/
 
 │   └── ui/                   # UI components
 
-├── contexts/### Admin Panel (Recommended) 🔐
+├── contexts/6. Click **Create**│   ├── api/
 
 │   └── LanguageContext.tsx   # Language state management
 
-├── lib/The easiest way to manage donators is through the admin panel:
+├── lib/│   │   └── donators/          # API route for fetching donators
 
 │   ├── i18n.ts              # Translations (EN, UZ, RU)
 
-│   ├── db.ts                # Database abstraction layer1. **Access**: Navigate to `/admin` or click the small dot (•) at the bottom of the homepage
+│   ├── db.ts                # MongoDB database layer✅ `BLOB_READ_WRITE_TOKEN` will be automatically added to your environment variables.│   ├── donators/              # Donators page
 
-│   └── auth.ts              # Admin authentication2. **Login**: Enter password (default: `warmsteps2025`)
+│   └── auth.ts              # Admin authentication
 
-├── data/3. **Add/Edit/Delete**: Use the intuitive interface to manage donators
+├── data/│   ├── layout.tsx             # Root layout with providers
 
-│   └── donators.json        # Local development data4. **Auto-Update**: All stats (collected amount, slippers funded, progress) automatically update on the main page!
+│   └── donators.json        # Local development data
 
-└── hooks/
+└── hooks/**See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for detailed instructions.**│   ├── page.tsx               # Main donation tracker page
 
-    └── use-toast.ts         # Toast notifications hook**Features:**
+    └── use-toast.ts         # Toast notifications hook
 
-```- ✅ Password protected
-
-- ✅ Add new donators with name, amount, date, and optional message
-
-## 🌍 Translations- ✅ Edit existing donators
-
-- ✅ Delete donators with confirmation
-
-The app supports 3 languages with complete translations:- ✅ Real-time stats dashboard
-
-- ✅ Automatic calculation of total donations and progress
-
-- **English** (en)
-
-- **Uzbek** (uz)**Change Admin Password**: Edit `lib/auth.ts`:
-
-- **Russian** (ru)```typescript
-
-export const ADMIN_PASSWORD = "your-secure-password-here"
-
-To add or modify translations, edit `lib/i18n.ts`.```
+```│   └── globals.css            # Global styles
 
 
 
-## 🎨 Tech Stack### Manual Method (Alternative)
+## 🌍 Translations## 🔐 Admin Panel├── components/
 
 
 
-- **Framework:** Next.js 16 (App Router)To manually add donators, edit `data/donators.json`:
+The app supports 3 languages with complete translations:│   ├── ui/                    # Reusable UI components
+
+
+
+- **English** (en)Access the admin panel at `/admin`│   ├── LanguageSwitcher.tsx   # Language switcher dropdown
+
+- **Uzbek** (uz)
+
+- **Russian** (ru)│   └── theme-provider.tsx     # Theme context provider
+
+
+
+To add or modify translations, edit `lib/i18n.ts`.**Default Password:** `warmsteps2025`├── contexts/
+
+
+
+## 🎨 Tech Stack│   └── LanguageContext.tsx    # Language context and hook
+
+
+
+- **Framework:** Next.js 16 (App Router)To change the password, edit `lib/auth.ts`:├── data/
 
 - **Language:** TypeScript
 
+- **Database:** MongoDB Atlas (cloud) / JSON (local)│   └── donators.json          # Donators data storage
+
+- **Styling:** Tailwind CSS
+
+- **UI Components:** Radix UI```typescript├── lib/
+
+- **Analytics:** Vercel Analytics
+
+- **Deployment:** Vercelexport async function validateAdminPassword(password: string): Promise<boolean> {│   ├── i18n.ts                # Translation strings
+
+
+
+## 📊 How It Works  return password === 'YOUR_NEW_PASSWORD'│   └── utils.ts               # Utility functions
+
+
+
+### Local Development}├── hooks/
+
+- Uses `data/donators.json` for storing donation data
+
+- No database setup needed```│   └── use-toast.ts           # Toast notification hook
+
+- Hot reload enabled
+
+└── public/                    # Static assets
+
+### Production (Vercel)
+
+- Automatically detects MongoDB Atlas environment### Admin Features```
+
+- Database: `warmsteps` (or custom name via `MONGODB_DB`)
+
+- Collection: `donators`
+
+- Scales automatically with MongoDB Atlas
+
+- Falls back to JSON if MongoDB not configured- ✅ Add new donators## 🌍 Adding/Editing Translations
+
+
+
+## 🚢 Deployment- ✅ Edit existing donations
+
+
+
+### Deploy to Vercel- ✅ Delete donationsEdit the translation file at `lib/i18n.ts`:
+
+
+
+1. **Push to GitHub**- ✅ Real-time stats (total collected, donator count, slippers funded)
+
+   ```bash
+
+   git add .```typescript
+
+   git commit -m "Initial commit"
+
+   git push origin main## 📁 Project Structureexport const translations: Record<Language, Translations> = {
+
+   ```
+
+  en: {
+
+2. **Import to Vercel**
+
+   - Go to [vercel.com](https://vercel.com)```    title: "Warm Steps for Kind Hearts",
+
+   - Click "New Project"
+
+   - Import your GitHub repositorydonation-tracker/    // ... more translations
+
+   - Click "Deploy"
+
+├── app/  },
+
+3. **Set up MongoDB Atlas**
+
+   - Use Vercel's MongoDB integration (easiest)│   ├── page.tsx              # Main donation page  uz: {
+
+   - Or follow manual setup in [DATABASE_SETUP.md](./DATABASE_SETUP.md)
+
+   - Recommended database name: **`warmsteps`**│   ├── layout.tsx            # Root layout    title: "Mehribonlar uchun Issiq Qadamlar",
+
+
+
+4. **Done!** 🎉│   ├── admin/    // ... more translations
+
+   - Your site is live
+
+   - Admin panel works at `your-site.vercel.app/admin`│   │   └── page.tsx          # Admin panel  },
+
+
+
+## 🔧 Development│   ├── donators/  ru: {
+
+
+
+### Available Scripts│   │   └── page.tsx          # Donators list page    title: "Теплые шаги для добрых сердец",
+
+
+
+```bash│   └── api/    // ... more translations
+
+pnpm dev      # Start development server
+
+pnpm build    # Build for production│       ├── stats/route.ts    # Stats API endpoint  }
+
+pnpm start    # Start production server
+
+pnpm lint     # Run ESLint│       ├── donators/route.ts # Public donators API}
+
+```
+
+│       └── admin/donators/route.ts # Admin CRUD API```
+
+### Environment Variables
+
+├── components/
+
+For local development with MongoDB Atlas, create `.env.local`:
+
+│   ├── LanguageSwitcher.tsx  # Language selector## 📝 Managing Donators
+
+```env
+
+# Required: Your MongoDB Atlas connection string│   └── ui/                   # UI components
+
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
+
+├── contexts/### Admin Panel (Recommended) 🔐
+
+# Optional: Custom database name (defaults to 'warmsteps')
+
+MONGODB_DB=warmsteps│   └── LanguageContext.tsx   # Language state management
+
+```
+
+├── lib/The easiest way to manage donators is through the admin panel:
+
+Get the connection string from MongoDB Atlas dashboard or Vercel's integration.
+
+│   ├── i18n.ts              # Translations (EN, UZ, RU)
+
+## 📝 Database Naming Convention
+
+│   ├── db.ts                # Database abstraction layer1. **Access**: Navigate to `/admin` or click the small dot (•) at the bottom of the homepage
+
+**Recommended database name:** `warmsteps`
+
+│   └── auth.ts              # Admin authentication2. **Login**: Enter password (default: `warmsteps2025`)
+
+Why?
+
+- ✅ Short and memorable├── data/3. **Add/Edit/Delete**: Use the intuitive interface to manage donators
+
+- ✅ Matches project theme
+
+- ✅ Easy to type│   └── donators.json        # Local development data4. **Auto-Update**: All stats (collected amount, slippers funded, progress) automatically update on the main page!
+
+- ✅ Professional
+
+└── hooks/
+
+The database will contain:
+
+- **Database:** `warmsteps` (or your custom name)    └── use-toast.ts         # Toast notifications hook**Features:**
+
+- **Collection:** `donators`
+
+- **Documents:** Individual donation records```- ✅ Password protected
+
+
+
+## 🆚 Why MongoDB?- ✅ Add new donators with name, amount, date, and optional message
+
+
+
+**MongoDB Atlas Benefits:**## 🌍 Translations- ✅ Edit existing donators
+
+- ✅ **Free tier** 512 MB storage
+
+- ✅ **True database** with querying and indexing- ✅ Delete donators with confirmation
+
+- ✅ **Faster** than blob storage for queries
+
+- ✅ **Scalable** - easily upgrade when neededThe app supports 3 languages with complete translations:- ✅ Real-time stats dashboard
+
+- ✅ **Industry standard** - used by millions of apps
+
+- ✅ **Better features** - transactions, aggregations, etc.- ✅ Automatic calculation of total donations and progress
+
+- ✅ **No vendor lock-in** - can migrate anywhere
+
+- ✅ **Vercel integration** - One-click setup- **English** (en)
+
+
+
+## 🤝 Contributing- **Uzbek** (uz)**Change Admin Password**: Edit `lib/auth.ts`:
+
+
+
+Contributions are welcome! Please feel free to submit a Pull Request.- **Russian** (ru)```typescript
+
+
+
+## 📝 Licenseexport const ADMIN_PASSWORD = "your-secure-password-here"
+
+
+
+This project is open source and available under the MIT License.To add or modify translations, edit `lib/i18n.ts`.```
+
+
+
+## 💬 Support
+
+
+
+- **Telegram:** [@warmstepdonation](https://t.me/warmstepdonation)## 🎨 Tech Stack### Manual Method (Alternative)
+
+- **Issues:** [GitHub Issues](https://github.com/tolibme/donation-tracker/issues)
+
+
+
+## 🙏 Acknowledgments
+
+- **Framework:** Next.js 16 (App Router)To manually add donators, edit `data/donators.json`:
+
+Built with ❤️ for the Warm Steps charity initiative to provide winter slippers for those in need.
+
+- **Language:** TypeScript
+
+---
+
 - **Styling:** Tailwind CSS```json
+
+**Made with Next.js, MongoDB, and Vercel** 🚀
 
 - **UI Components:** Radix UI[
 

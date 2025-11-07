@@ -17,8 +17,8 @@ export async function POST(request: Request) {
     if (storageType === 'Local JSON File' && (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME)) {
       return NextResponse.json({ 
         error: 'Database not configured',
-        message: 'You are running in production but Vercel Blob is not set up. Please set up Vercel Blob storage to enable admin features.',
-        instructions: 'Go to Vercel Dashboard → Your Project → Storage → Create Store → Blob. See DATABASE_SETUP.md for details.'
+        message: 'You are running in production but MongoDB is not set up. Please set up MongoDB Atlas to enable admin features.',
+        instructions: 'Go to MongoDB Atlas → Create Free Cluster → Get Connection String → Add MONGODB_URI to Vercel Environment Variables. See DATABASE_SETUP.md for details.'
       }, { status: 503 })
     }
 
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
       if (!result) {
         return NextResponse.json({ 
           error: 'Failed to add donator',
-          message: 'Could not save data. If on Vercel, please set up Vercel Blob storage.'
+          message: 'Could not save data. If on Vercel, please set up MongoDB Atlas.'
         }, { status: 500 })
       }
     } else if (action === 'delete') {
@@ -37,7 +37,7 @@ export async function POST(request: Request) {
       if (!success) {
         return NextResponse.json({ 
           error: 'Failed to delete donator',
-          message: 'Could not delete data. If on Vercel, please set up Vercel Blob storage.'
+          message: 'Could not delete data. If on Vercel, please set up MongoDB Atlas.'
         }, { status: 500 })
       }
     } else if (action === 'edit') {
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
       if (!success) {
         return NextResponse.json({ 
           error: 'Failed to update donator',
-          message: 'Could not update data. If on Vercel, please set up Vercel Blob storage.'
+          message: 'Could not update data. If on Vercel, please set up MongoDB Atlas.'
         }, { status: 500 })
       }
     }
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     if (errorMessage.includes('serverless') || errorMessage.includes('filesystem')) {
       return NextResponse.json({ 
         error: 'Database not configured',
-        message: 'Vercel Blob storage is required for production. Please set it up.',
+        message: 'MongoDB Atlas is required for production. Please set it up.',
         instructions: 'See DATABASE_SETUP.md for setup instructions.',
         details: errorMessage
       }, { status: 503 })
