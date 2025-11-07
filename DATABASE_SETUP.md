@@ -1,6 +1,6 @@
-# Vercel KV Database Setup
+# Vercel Blob Storage Setup
 
-This project uses **Vercel KV** for storing donators data in production, while using local JSON files for development.
+This project uses **Vercel Blob** for storing donators data in production, while using local JSON files for development.
 
 ## 📋 Prerequisites
 
@@ -9,42 +9,38 @@ This project uses **Vercel KV** for storing donators data in production, while u
 
 ## 🚀 Quick Setup Guide
 
-### Step 1: Install Vercel KV Package
+### Step 1: Install Vercel Blob Package
 
 ```bash
-pnpm add @vercel/kv
+pnpm add @vercel/blob
 ```
 
-### Step 2: Create Vercel KV Database
+✅ Already done in this project!
+
+### Step 2: Create Vercel Blob Store
 
 1. Go to your [Vercel Dashboard](https://vercel.com/dashboard)
-2. Select your deployed project
+2. Select your deployed project: **donation-tracker**
 3. Click on the **Storage** tab in the top navigation
-4. Click **Create Database** button
-5. Select **KV** (Key-Value Store)
-6. Give it a name: `donation-tracker-kv`
-7. Select your preferred region (choose closest to your users)
-8. Click **Create**
+4. Click **Create Store** or **Create Database**
+5. Select **Blob** (Fast object storage)
+6. Give it a name: `donation-tracker-blob`
+7. Click **Create**
 
-✅ Vercel will automatically add these environment variables to your project:
-- `KV_URL`
-- `KV_REST_API_URL`
-- `KV_REST_API_TOKEN`
-- `KV_REST_API_READ_ONLY_TOKEN`
+✅ Vercel will automatically add the `BLOB_READ_WRITE_TOKEN` environment variable to your project!
 
-### Step 3: Initial Data Migration
+### Step 3: Upload Initial Data
 
-You need to migrate your initial donators data from `data/donators.json` to Vercel KV:
+After creating the Blob store, you need to upload your initial donators data.
 
-#### Option A: Using Vercel KV Dashboard (Easiest)
+#### Option A: Using Admin Panel (Easiest)
 
-1. In your Vercel project, go to **Storage** → Select your KV database
-2. Click on **Data** tab
-3. Click **Set a Key**
-4. Set:
-   - **Key**: `donators`
-   - **Value**: Copy the entire content from your `data/donators.json` file
-5. Click **Save**
+The first time you add a donator through the admin panel in production, it will automatically create the blob file with your data.
+
+1. Go to your deployed site: `https://your-site.vercel.app/admin`
+2. Login with password: `warmsteps2025`
+3. Add your first donator
+4. The system will automatically create `donators.json` in Blob storage
 
 #### Option B: Using Vercel CLI
 
@@ -58,30 +54,31 @@ vercel login
 # Link your project
 vercel link
 
-# Set the donators data
-vercel kv set donators "$(cat data/donators.json)"
+# Pull environment variables (including BLOB_READ_WRITE_TOKEN)
+vercel env pull .env.local
 ```
 
-#### Option C: Using REST API
+Then you can manually upload via the Vercel Blob dashboard.
 
-```bash
-# Get your KV_REST_API_URL and KV_REST_API_TOKEN from Vercel dashboard
-# Then run:
+#### Option C: Pre-populate via Dashboard
 
-curl -X POST "YOUR_KV_REST_API_URL/set/donators" \
-  -H "Authorization: Bearer YOUR_KV_REST_API_TOKEN" \
-  -d "$(cat data/donators.json)"
-```
+1. In your Blob store dashboard, look for upload/create file option
+2. Create a file named: `donators.json`
+3. Copy the content from your local `data/donators.json`
+4. Save
 
-### Step 4: Deploy
+### Step 4: Verify Setup
 
-```bash
-git add .
-git commit -m "Add Vercel KV support"
-git push
-```
+1. Go to **Settings** → **Environment Variables**
+2. Confirm `BLOB_READ_WRITE_TOKEN` is present
+3. Your app should auto-redeploy with the new environment variable
 
-Your app will automatically redeploy and use Vercel KV! 🎉
+### Step 5: Test It!
+
+1. Visit: `https://your-site.vercel.app/admin`
+2. Login with your admin password
+3. Try adding/editing/deleting a donator
+4. Check the main page to see updated stats
 
 ## 🔄 How It Works
 
@@ -89,29 +86,27 @@ The app automatically detects the environment:
 
 - **Local Development** (`npm run dev`):
   - Uses `data/donators.json` file
-  - No KV setup needed
+  - No Blob setup needed
   - Easy to test locally
 
 - **Production** (Vercel):
-  - Automatically uses Vercel KV if environment variables are present
-  - Falls back to JSON file if KV is not configured (read-only)
+  - Automatically uses Vercel Blob if `BLOB_READ_WRITE_TOKEN` is present
+  - Creates/updates `donators.json` blob file
+  - Falls back to JSON file if Blob is not configured (read-only)
 
-## 🧪 Testing Locally with Vercel KV
+## 🧪 Testing Locally with Vercel Blob
 
-If you want to test with Vercel KV locally:
+If you want to test with Vercel Blob locally:
 
 1. Create a `.env.local` file in your project root:
 
 ```env
-KV_URL="your-kv-url"
-KV_REST_API_URL="your-rest-api-url"
-KV_REST_API_TOKEN="your-token"
-KV_REST_API_READ_ONLY_TOKEN="your-read-only-token"
+BLOB_READ_WRITE_TOKEN="your-token-here"
 ```
 
-2. Get these values from:
-   - Vercel Dashboard → Your Project → Storage → Your KV Database → `.env.local` tab
-   - Copy all the environment variables
+2. Get this value from:
+   - Vercel Dashboard → Your Project → Storage → Your Blob Store → `.env.local` tab
+   - Copy the `BLOB_READ_WRITE_TOKEN` variable
 
 3. Restart your dev server:
 
@@ -124,41 +119,57 @@ pnpm dev
 To verify everything is working:
 
 1. Go to your deployed site's admin panel: `https://your-site.vercel.app/admin`
-2. Login with your password
+2. Login with password: `warmsteps2025`
 3. Try adding a test donator
-4. Check if it appears on the main page
-5. Verify in Vercel Dashboard → Storage → Data that the `donators` key is updated
+4. Check if it appears on the main page with updated stats
+5. Verify in Vercel Dashboard → Storage → Blob → Browse files that `donators.json` exists
 
 ## 🔍 Troubleshooting
 
-### Error: "Failed to manage donators"
+### Error: "Vercel Blob is not configured"
 
-**Solution**: Make sure you've created the KV database and the environment variables are set.
+**Solution**: 
+1. Make sure you've created the Blob store in Vercel Dashboard
+2. Check that `BLOB_READ_WRITE_TOKEN` environment variable exists
+3. Redeploy your application after creating the Blob store
 
 ### Data not persisting
 
 **Solution**: 
-1. Check Vercel Dashboard → Storage → Your KV Database → Data
-2. Verify the `donators` key exists with valid JSON data
-3. Redeploy your application
+1. Check Vercel Dashboard → Storage → Your Blob Store → Browse
+2. Verify `donators.json` file exists
+3. Check the file content is valid JSON
+4. Try deleting and re-adding through admin panel
 
 ### Local development not working
 
 **Solution**: 
 - Make sure `data/donators.json` exists
 - Check file permissions
-- Try deleting `.next` folder and rebuilding
+- Try deleting `.next` folder and rebuilding: `pnpm build`
+
+### 503 Service Unavailable
+
+**Solution**:
+- This means Blob storage is not configured
+- Follow Step 2 to create Blob store
+- Wait for auto-redeploy or manually redeploy
 
 ## 💰 Pricing
 
-Vercel KV Free Tier includes:
-- 256 MB storage
-- 3000 commands per day
+Vercel Blob Free Tier (Hobby) includes:
+- **500 MB storage**
+- **1 GB bandwidth per month**
 - More than enough for this donation tracker!
+
+For reference:
+- Each donator entry is ~100 bytes
+- You can store thousands of donators easily
+- JSON file typically < 1 MB even with hundreds of donators
 
 ## 📚 Resources
 
-- [Vercel KV Documentation](https://vercel.com/docs/storage/vercel-kv)
-- [Vercel KV Quickstart](https://vercel.com/docs/storage/vercel-kv/quickstart)
-- [@vercel/kv Package](https://www.npmjs.com/package/@vercel/kv)
+- [Vercel Blob Documentation](https://vercel.com/docs/storage/vercel-blob)
+- [Vercel Blob Quickstart](https://vercel.com/docs/storage/vercel-blob/quickstart)
+- [@vercel/blob Package](https://www.npmjs.com/package/@vercel/blob)
 

@@ -1,4 +1,4 @@
-// Database utility that works with both local JSON and Vercel KV
+// Database utility that works with both local JSON and Vercel Blob
 import path from 'path'
 import { promises as fs } from 'fs'
 
@@ -10,32 +10,45 @@ interface Donator {
   message?: string
 }
 
-// Check if we're in production with Vercel KV
-const isProduction = process.env.VERCEL_ENV === 'production'
-const hasKV = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+// Check if we have Vercel Blob configured
+const hasBlob = process.env.BLOB_READ_WRITE_TOKEN
 
-let kv: any = null
+let blobPut: any = null
+let blobList: any = null
+let blobDel: any = null
 
-// Initialize KV only if available
-if (hasKV) {
+// Initialize Blob only if available
+if (hasBlob) {
   try {
-    const { kv: vercelKV } = require('@vercel/kv')
-    kv = vercelKV
+    const blob = require('@vercel/blob')
+    blobPut = blob.put
+    blobList = blob.list
+    blobDel = blob.del
   } catch (error) {
-    console.warn('Vercel KV not available, using local JSON file')
+    console.warn('Vercel Blob not available, using local JSON file')
   }
 }
 
-const DONATORS_KEY = 'donators'
+const DONATORS_BLOB_NAME = 'donators.json'
 
 // Get all donators
 export async function getDonators(): Promise<Donator[]> {
-  if (kv) {
+  if (blobPut && blobList) {
     try {
-      const donators = await kv.get(DONATORS_KEY)
-      return donators || []
+      // List blobs to find our donators file
+      const { blobs } = await blobList({ prefix: DONATORS_BLOB_NAME })
+      
+      if (blobs && blobs.length > 0) {
+        // Fetch the blob content
+        const response = await fetch(blobs[0].url)
+        const data = await response.json()
+        return data
+      }
+      
+      // If blob doesn't exist, return empty array
+      return []
     } catch (error) {
-      console.error('Error reading from KV:', error)
+      console.error('Error reading from Blob:', error)
       return []
     }
   } else {
@@ -54,12 +67,24 @@ export async function getDonators(): Promise<Donator[]> {
 
 // Save all donators
 export async function saveDonators(donators: Donator[]): Promise<boolean> {
-  if (kv) {
+  if (blobPut && blobList && blobDel) {
     try {
-      await kv.set(DONATORS_KEY, donators)
+      // Delete old blob if exists
+      const { blobs } = await blobList({ prefix: DONATORS_BLOB_NAME })
+      if (blobs && blobs.length > 0) {
+        await blobDel(blobs[0].url)
+      }
+      
+      // Upload new blob
+      const jsonString = JSON.stringify(donators, null, 2)
+      await blobPut(DONATORS_BLOB_NAME, jsonString, {
+        access: 'public',
+        contentType: 'application/json',
+      })
+      
       return true
     } catch (error) {
-      console.error('Error writing to KV:', error)
+      console.error('Error writing to Blob:', error)
       return false
     }
   } else {
@@ -71,12 +96,12 @@ export async function saveDonators(donators: Donator[]): Promise<boolean> {
       return true
     } catch (error) {
       console.error('Error writing to JSON file:', error)
-      console.error('If you are on Vercel, you need to set up Vercel KV database.')
+      console.error('If you are on Vercel, you need to set up Vercel Blob storage.')
       console.error('See DATABASE_SETUP.md for instructions.')
       
       // Check if we're in a serverless environment
       if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-        throw new Error('Cannot write to filesystem in serverless environment. Please set up Vercel KV database. See DATABASE_SETUP.md')
+        throw new Error('Cannot write to filesystem in serverless environment. Please set up Vercel Blob storage. See DATABASE_SETUP.md')
       }
       return false
     }
@@ -130,5 +155,5 @@ export async function deleteDonator(id: number): Promise<boolean> {
 
 // Get storage type for debugging
 export function getStorageType(): string {
-  return kv ? 'Vercel KV' : 'Local JSON File'
+  return blobPut ? 'Vercel Blob' : 'Local JSON File'
 }
