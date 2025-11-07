@@ -200,9 +200,39 @@ Customize colors in `app/globals.css` using CSS variables:
 
 ### Vercel (Recommended)
 
+#### Step 1: Set Up Vercel KV Database
+
+**Important:** To use the admin panel in production, you need to set up Vercel KV database (it's free!):
+
 1. Push your code to GitHub
 2. Import your repository on [Vercel](https://vercel.com)
-3. Deploy with one click!
+3. After deployment, go to your project dashboard
+4. Navigate to **Storage** tab → **Create Database**
+5. Select **KV (Key-Value Store)**
+6. Name it (e.g., "donation-tracker-kv")
+7. Click **Create**
+
+Vercel will automatically add the required environment variables to your project.
+
+#### Step 2: Initial Data Migration (One-time)
+
+After setting up KV, you need to migrate your initial data from `data/donators.json`:
+
+1. Go to the **Storage** tab in your Vercel project
+2. Open your KV database
+3. Use the **Data Browser** or **CLI** to set the initial data:
+   - Key: `donators`
+   - Value: Copy the content from `data/donators.json`
+
+Or use the Vercel KV REST API to set initial data.
+
+#### How It Works
+
+- **Local Development**: Uses `data/donators.json` file (no setup needed)
+- **Production (Vercel)**: Automatically uses Vercel KV database
+- The code detects the environment and switches storage methods automatically
+
+For detailed instructions, see [DATABASE_SETUP.md](./DATABASE_SETUP.md)
 
 ### Manual Deployment
 

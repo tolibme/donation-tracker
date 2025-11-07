@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server'
-import path from 'path'
-import { promises as fs } from 'fs'
+import { getDonators } from '@/lib/db'
 
 export async function GET() {
   try {
-    const jsonDirectory = path.join(process.cwd(), 'data')
-    const fileContents = await fs.readFile(jsonDirectory + '/donators.json', 'utf8')
-    const donators = JSON.parse(fileContents)
+    const donators = await getDonators()
     
     // Calculate total collected amount
-    const totalCollected = donators.reduce((sum: number, donator: any) => {
+    const totalCollected = donators.reduce((sum, donator) => {
       return sum + Number(donator.amount)
     }, 0)
     
