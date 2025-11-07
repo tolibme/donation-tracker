@@ -91,6 +91,13 @@ export default function AdminPanel() {
 
     try {
       const action = editingId ? 'edit' : 'add'
+      const donatorData = {
+        name: formData.name.trim(),
+        amount: parseInt(formData.amount),
+        date: formData.date,
+        message: formData.message.trim() || undefined
+      }
+
       const res = await fetch('/api/admin/donators', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,13 +105,19 @@ export default function AdminPanel() {
           password,
           action,
           id: editingId,
-          donator: formData
+          donator: donatorData
         })
       })
 
       if (res.ok) {
         const data = await res.json()
-        setDonators(data.donators)
+        // Force update the donators list
+        if (data.donators && Array.isArray(data.donators)) {
+          setDonators([...data.donators])
+        } else {
+          // Fallback: reload from API
+          await loadDonators()
+        }
         setFormData({ name: "", amount: "", date: new Date().toISOString().split('T')[0], message: "" })
         setEditingId(null)
         toast({
@@ -154,7 +167,13 @@ export default function AdminPanel() {
 
       if (res.ok) {
         const data = await res.json()
-        setDonators(data.donators)
+        // Force update the donators list
+        if (data.donators && Array.isArray(data.donators)) {
+          setDonators([...data.donators])
+        } else {
+          // Fallback: reload from API
+          await loadDonators()
+        }
         toast({
           title: "✓ Success",
           description: "Donator deleted successfully",
