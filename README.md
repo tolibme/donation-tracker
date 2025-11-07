@@ -96,7 +96,31 @@ export const translations: Record<Language, Translations> = {
 
 ## 📝 Managing Donators
 
-To add new donators, edit `data/donators.json`:
+### Admin Panel (Recommended) 🔐
+
+The easiest way to manage donators is through the admin panel:
+
+1. **Access**: Navigate to `/admin` or click the small dot (•) at the bottom of the homepage
+2. **Login**: Enter password (default: `warmsteps2025`)
+3. **Add/Edit/Delete**: Use the intuitive interface to manage donators
+4. **Auto-Update**: All stats (collected amount, slippers funded, progress) automatically update on the main page!
+
+**Features:**
+- ✅ Password protected
+- ✅ Add new donators with name, amount, date, and optional message
+- ✅ Edit existing donators
+- ✅ Delete donators with confirmation
+- ✅ Real-time stats dashboard
+- ✅ Automatic calculation of total donations and progress
+
+**Change Admin Password**: Edit `lib/auth.ts`:
+```typescript
+export const ADMIN_PASSWORD = "your-secure-password-here"
+```
+
+### Manual Method (Alternative)
+
+To manually add donators, edit `data/donators.json`:
 
 ```json
 [
@@ -111,22 +135,26 @@ To add new donators, edit `data/donators.json`:
 ```
 
 **Fields:**
-- `id`: Unique identifier (number)
+- `id`: Unique identifier (number) - auto-generated in admin panel
 - `name`: Donor's name (string)
 - `amount`: Donation amount in UZS (number)
 - `date`: Donation date in YYYY-MM-DD format (string)
 - `message`: Optional message from donor (string, optional)
 
-## 🔄 Updating Progress
+## 🔄 How Progress Updates Work
 
-To update the donation progress, edit the `collected` variable in `app/page.tsx`:
+The system **automatically calculates** all statistics from the donators data:
 
-```typescript
-const collected = 3_450_000  // Update this with current amount in UZS
-const goal = 9_000_000
-```
+1. **Total Collected**: Sum of all donation amounts in `donators.json`
+2. **Progress Percentage**: `(collected / goal) × 100`
+3. **Slippers Funded**: `Math.floor(collected / 45000)`
+4. **Slippers Remaining**: `187 - slippersFunded`
 
-The progress bar and statistics will automatically update.
+**No manual updates needed!** When you add/edit/delete a donator through the admin panel, everything updates automatically:
+- Main page progress bar
+- Collected amount display
+- Slippers funded counter
+- Remaining slippers count
 
 ## 🎨 Customization
 

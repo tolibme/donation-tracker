@@ -10,6 +10,7 @@ import Link from "next/link"
 
 export default function DonationTracker() {
   const [progress, setProgress] = useState(0)
+  const [collected, setCollected] = useState(0)
   const { toast } = useToast()
   const { t, language } = useLanguage()
 
@@ -23,21 +24,33 @@ export default function DonationTracker() {
     day: 'numeric' 
   })
 
-  // Animation effect for progress bar
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setProgress(0.001) // GOTTA CHANGE THIS EVERY DAY (Sample: 3,450,000 / 9,000,000 * 100)
-    }, 300)
-    return () => clearTimeout(timer)
-  }, [])
-
-  const collected = 90_000
   const goal = 9_000_000
   const slipperCost = 45_000
   const totalSlippers = 187
 
   const slippersFunded = Math.floor(collected / slipperCost)
   const slippersRemaining = totalSlippers - slippersFunded
+
+  // Fetch collected amount from API
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch('/api/stats')
+        const data = await res.json()
+        setCollected(data.collected)
+        
+        // Calculate and set progress
+        const progressPercentage = (data.collected / goal) * 100
+        setTimeout(() => {
+          setProgress(progressPercentage)
+        }, 300)
+      } catch (error) {
+        console.error('Failed to fetch stats:', error)
+      }
+    }
+
+    fetchStats()
+  }, [goal])
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -175,6 +188,13 @@ export default function DonationTracker() {
             <a href="https://instagram.com/yourinsta" className="text-primary hover:underline font-semibold">
               Instagram @yourinsta
             </a> */}
+          </div>
+          
+          {/* Hidden admin link */}
+          <div className="mt-8 text-center">
+            <Link href="/admin" className="text-xs text-muted-foreground/30 hover:text-muted-foreground/50 transition-colors">
+              •
+            </Link>
           </div>
         </div>
       </div>
