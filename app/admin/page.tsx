@@ -112,12 +112,14 @@ export default function AdminPanel() {
           description: editingId ? "Donator updated successfully" : "Donator added successfully",
         })
       } else {
-        throw new Error('Failed to save donator')
+        const errorData = await res.json()
+        throw new Error(errorData.message || errorData.error || 'Failed to save donator')
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save donator'
       toast({
         title: "Error",
-        description: "Failed to save donator",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -158,12 +160,14 @@ export default function AdminPanel() {
           description: "Donator deleted successfully",
         })
       } else {
-        throw new Error('Failed to delete donator')
+        const errorData = await res.json()
+        throw new Error(errorData.message || errorData.error || 'Failed to delete donator')
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete donator'
       toast({
         title: "Error",
-        description: "Failed to delete donator",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {

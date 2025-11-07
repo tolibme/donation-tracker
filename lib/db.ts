@@ -71,6 +71,13 @@ export async function saveDonators(donators: Donator[]): Promise<boolean> {
       return true
     } catch (error) {
       console.error('Error writing to JSON file:', error)
+      console.error('If you are on Vercel, you need to set up Vercel KV database.')
+      console.error('See DATABASE_SETUP.md for instructions.')
+      
+      // Check if we're in a serverless environment
+      if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+        throw new Error('Cannot write to filesystem in serverless environment. Please set up Vercel KV database. See DATABASE_SETUP.md')
+      }
       return false
     }
   }
