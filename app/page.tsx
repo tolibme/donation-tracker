@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LanguageSwitcher } from "@/components/LanguageSwitcher"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function DonationTracker() {
   const [progress, setProgress] = useState(0)
@@ -142,12 +143,18 @@ export default function DonationTracker() {
 
           <div className="space-y-4">
             <div 
-              className="bg-secondary p-4 rounded-lg border border-border cursor-pointer hover:bg-secondary/80 transition-colors"
-              onClick={() => copyToClipboard("8600612227452165", "Uzcard")}
+              className="bg-secondary p-4 rounded-lg border border-border cursor-not-allowed opacity-60 relative"
             >
               <p className="text-sm text-muted-foreground mb-2">Uzcard</p>
-              <p className="text-lg font-mono font-bold text-foreground">8600 6122 2745 2165</p>
-              <p className="text-xs text-muted-foreground mt-2">{t.clickToCopy}</p>
+              <p className="text-lg font-mono font-bold text-foreground blur-sm select-none">8600 6122 2745 2165</p>
+              <p className="text-xs text-muted-foreground mt-2 blur-sm">{t.clickToCopy}</p>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-sm font-semibold text-foreground bg-background/90 px-4 py-2 rounded-lg shadow-lg">
+                  {language === 'en' && '🙏 Thank you to all contributors!'}
+                  {language === 'uz' && '🙏 Barcha homiylar uchun rahmat!'}
+                  {language === 'ru' && '🙏 Спасибо всем спонсорам!'}
+                </span>
+              </div>
             </div>
 
             {/* <div className="bg-secondary p-4 rounded-lg border border-border">
@@ -156,15 +163,37 @@ export default function DonationTracker() {
             </div> */}
           </div>
 
-          <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20">
-            <p className="text-sm text-foreground mb-3">
+          <div className="mt-6 p-4 bg-primary/10 rounded-lg border border-primary/20 opacity-60">
+            <p className="text-sm text-foreground mb-3 blur-sm select-none">
               <span className="font-semibold">💬 {t.afterDonating}</span> {t.sendScreenshotMessage}
             </p>
-            <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold">
-              <a href="https://t.me/warmstepdonation">
+            <Button disabled className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold cursor-not-allowed">
+              <a href="https://t.me/warmstepdonation" className="pointer-events-none">
                 {t.telegramButton}
               </a>
             </Button>
+          </div>
+        </Card>
+
+        {/* Program Completed - Proof Images */}
+        <Card className="p-6 mb-8">
+          <h2 className="text-2xl font-bold mb-4 text-center">
+            {language === 'en' && '🎉 Program Completed - Proof of Distribution'}
+            {language === 'uz' && '🎉 Dastur Yakunlandi - Tarqatish Isboti'}
+            {language === 'ru' && '🎉 Программа Завершена - Доказательство Распределения'}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+              <div key={num} className="relative aspect-square overflow-hidden rounded-lg border bg-muted">
+                <Image
+                  src={`/${num}.jpg`}
+                  alt={`${language === 'en' ? 'Distribution proof' : language === 'uz' ? 'Tarqatish isboti' : 'Доказательство распределения'} ${num}`}
+                  fill
+                  className="object-cover hover:scale-105 transition-transform duration-300"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                />
+              </div>
+            ))}
           </div>
         </Card>
 
